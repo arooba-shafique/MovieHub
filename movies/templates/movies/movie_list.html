@@ -1,0 +1,74 @@
+{% extends 'movies/base.html' %}
+{% block content %}
+<h2 class="text-2xl mb-4">All Movies</h2>
+
+<input type="text" id="searchInput" placeholder="Search movies..." 
+    class="p-2 rounded w-full text-black mb-4">
+
+<div id="movies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+
+<script>
+const csrftoken = '{{ csrf_token }}';
+
+async function fetchMovies(query='') {
+    let url = '/api/movies/';
+    if(query) url = `/api/movies/search/?q=${query}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const container = document.getElementById('movies');
+    container.innerHTML = '';
+
+    data.forEach(movie => {
+        const div = document.createElement('div');
+        div.className = 'relative bg-gray-700 p-2 rounded cursor-pointer hover:bg-gray-600 transition';
+
+        const isFav = movie.is_favorite; 
+        const heartColor = isFav ? 'text-red-500' : 'text-white';
+
+        div.innerHTML = `
+            <img src="${movie.poster_url}" class="w-full rounded">
+            <h3 class="text-lg mt-2">${movie.title}</h3>
+            <p class="text-sm">${movie.release_date}</p>
+            <button class="absolute top-2 right-2 focus:outline-none">
+                <svg class="w-6 h-6 ${heartColor} fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </button>
+        `;
+
+
+        div.querySelector('img, h3, p').onclick = () => {
+            window.location.href = `/movies/${movie.id}/`;
+        };
+
+        div.querySelector('button').onclick = async (e) => {
+            e.stopPropagation(); 
+            const res = await fetch(`/api/favorites/add/${movie.id}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = await res.json();
+            const svg = div.querySelector('svg');
+            if (data.status === 'added') {
+                svg.classList.remove('text-white');
+                svg.classList.add('text-red-500');
+            } else {
+                svg.classList.remove('text-red-500');
+                svg.classList.add('text-white');
+            }
+        };
+
+        container.appendChild(div);
+    });
+}
+
+fetchMovies();
+
+document.getElementById('searchInput').addEventListener('input', e => {
+    fetchMovies(e.target.value);
+});
+</script>
+{% endblock %}

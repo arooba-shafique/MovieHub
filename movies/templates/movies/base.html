@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-gray-900 text-white">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body.light-mode input,
+        body.light-mode textarea,
+        body.light-mode select {
+            background-color: white !important;
+            color: black !important;
+            border: 1px solid #ccc;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white transition-colors duration-300">
+    <header class="p-4 bg-gray-800 flex justify-between items-center">
+        <h1 class="text-2xl font-bold cursor-pointer" onclick="window.location.href='home/'">MovieHub</h1>
+        <div class="flex items-center gap-4">
+            {% if user.is_authenticated %}
+                <a href="/favorites/" class="hover:text-green-400">Favorites</a>
+                <form method="post" action="{% url 'logout' %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="text-white bg-red-600 px-4 py-2 rounded hover:bg-red-700">
+                        Logout
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" class="hover:text-green-400">Login</a>
+                <a href="{% url 'signup' %}" class="hover:text-green-400">Sign Up</a>
+            {% endif %}
+            <button id="darkModeToggle" class="p-2 bg-gray-700 rounded">🌓</button>
+        </div>
+    </header>
+
+    <main class="p-4">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        const toggle = document.getElementById('darkModeToggle');
+        toggle.addEventListener('click', () => {
+            document.body.classList.toggle('light-mode');
+            document.documentElement.classList.toggle('bg-white');
+            document.body.classList.toggle('bg-white');
+            document.body.classList.toggle('text-black');
+        });
+    </script>
+</body>
+</html>

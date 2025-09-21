@@ -1,0 +1,102 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-950 text-gray-100">
+
+    <div class="relative w-full h-[20vh] bg-gray-900">
+        {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/original{{ movie.poster_path }}" 
+                 alt="{{ movie.title }} Poster"
+                 class="absolute inset-0 w-full h-full object-cover opacity-40 blur-sm">
+        {% endif %}
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/80 to-transparent"></div>
+
+<div class="max-w-6xl mx-auto px-6 pt-60 pb-30 mt-20 grid md:grid-cols-3 gap-10">
+
+    <div class="md:col-span-1 flex justify-center">
+        {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w500{{ movie.poster_path }}" 
+                 alt="{{ movie.title }} Poster"
+                 class="rounded-2xl shadow-2xl">
+        {% else %}
+            <div class="w-64 h-96 bg-gray-800 rounded-lg flex items-center justify-center text-gray-500">
+                No Poster
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="md:col-span-2 space-y-6">
+<div class="md:col-span-2 space-y-6">
+<h1 class="text-4xl font-bold text-center text-white mb-6">
+    {{ movie.title }}
+</h1>
+
+
+    <p class="text-lg text-gray-300 leading-relaxed">
+        {{ movie.overview }}
+    </p>
+
+       
+        {% if trailer %}
+            <div class="aspect-video rounded-xl overflow-hidden shadow-lg mb-4">
+                <iframe 
+                    src="https://www.youtube.com/embed/{{ trailer }}"
+                    title="{{ movie.title }} trailer"
+                    class="w-full h-full"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen>
+                </iframe>
+            </div>
+        {% else %}
+            <p class="text-red-400 font-medium">🚫 Trailer not available</p>
+        {% endif %}
+      <a href="{{ full_movie_search_url }}" target="_blank" 
+   class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded font-semibold inline-block">
+   🎬 Watch Full Movie
+</a>
+
+
+    </div>
+</div>
+
+    <script>
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    document.getElementById("favorite-btn").addEventListener("click", function() {
+        fetch(`/api/favorites/add/{{ movie.id }}/`, {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": getCookie("csrftoken"),
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message || "Something happened");
+        })
+        .catch(err => console.error(err));
+    });
+    </script>
+
+</body>
+</html>

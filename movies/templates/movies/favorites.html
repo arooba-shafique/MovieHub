@@ -1,0 +1,20 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+<h2 class="text-2xl mb-4">Your Favorites</h2>
+
+{% if favorite_movies %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    {% for fav in favorite_movies %}
+      <div class="bg-gray-700 p-2 rounded relative hover:bg-gray-600 transition">
+        <a href="/movies/tmdb/{{ fav.tmdb_id }}/">
+          <img src="{{ fav.poster_url|default:'/static/no-image.png' }}" class="w-full rounded">
+          <h3 class="text-lg mt-2 text-white font-semibold">{{ fav.title }}</h3>
+        </a>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-center text-gray-400">You have no favorite movies yet.</p>
+{% endif %}
+{% endblock %}
