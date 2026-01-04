@@ -30,11 +30,11 @@ MovieHub is a **modern Django-based web application** that lets users **discover
 Typical structure includes:
 
 ```
-movie_project/       # Django project files
-movies/              # Main app for movies
-manage.py            # Django project runner
-README.md            # This file
-.gitignore           # Git ignore rules
+movie_project/      
+movies/             
+manage.py           
+README.md          
+.gitignore          
 ```
 
 ---
@@ -57,8 +57,8 @@ README.md            # This file
 
    ```bash
    python -m venv venv
-   source venv/bin/activate   # macOS/Linux
-   venv\Scripts\activate      # Windows
+   source venv/bin/activate   
+   venv\Scripts\activate    
    ```
 
 4. **Install dependencies**
