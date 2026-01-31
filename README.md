@@ -7,12 +7,12 @@ MovieHub is a **modern Django-based web application** that lets users **discover
 
 ## 🚀 Features
 
-* 🎞️ **Dynamic Movie Posters** — Fetches movie data and posters from TMDB. ([GitHub][1])
-* 🔍 **Search Movies** — Easily search for movies by name. ([GitHub][1])
-* 📊 **Movie Details** — View detailed information about each movie. ([GitHub][1])
-* 👤 **User Signup/Login** — Authentication system for users. ([GitHub][1])
-* 📱 **Responsive Design** — Works on desktop and mobile devices. ([GitHub][1])
-* ✨ **Beautiful Hero Section** — Stylish layout with gradient animations and modern UI. ([GitHub][1])
+* **Dynamic Movie Posters** — Fetches movie data and posters from TMDB. 
+* **Search Movies** — Easily search for movies by name. 
+* **Movie Details** — View detailed information about each movie.
+* **User Signup/Login** — Authentication system for users. 
+* **Responsive Design** — Works on desktop and mobile devices. 
+* **Beautiful Hero Section** — Stylish layout with gradient animations and modern UI. 
 
 ---
 
