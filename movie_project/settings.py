@@ -20,7 +20,8 @@ SECRET_KEY = 'django-insecure-6^)kdfk8t(mxjzq9-sibmu+=5j2u*4cw-c6aat*r3x_q@+)%2*
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", ".onrender.com"]
+
 
 
 INSTALLED_APPS = [
@@ -100,6 +101,9 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
+
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
