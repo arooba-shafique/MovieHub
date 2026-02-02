@@ -101,6 +101,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
- this is my movie project settings getting 40r on vercel deploy whst should I do should I add reauirements. Txt
+ 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TMDB_API_KEY = "1626150bba732e6e21e7b85b16466d61"
