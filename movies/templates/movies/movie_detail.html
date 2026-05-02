@@ -1,0 +1,51 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+<div id="movie-detail" class="text-center"></div>
+<button 
+  id="favorite-btn" 
+  class="bg-green-600 text-white px-4 py-2 rounded mt-4 hover:bg-green-700">
+  Add to Favorites
+</button>
+
+<p id="fav-msg" class="mt-2 text-green-500 hidden">Added to favorites!</p>
+
+<script>
+const movieId = "{{ movie_id }}";
+const container = document.getElementById('movie-detail');
+
+fetch(`/api/movies/tmdb/${movieId}/`)
+  .then(res => res.json())
+  .then(movie => {
+      container.innerHTML = `
+        <h2 class="text-3xl font-bold mb-4">${movie.title}</h2>
+        <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="mx-auto mb-4 rounded">
+        <p class="mb-4">${movie.overview}</p>
+        ${movie.trailer ? `<iframe width="560" height="315" src="${movie.trailer}" frameborder="0" allowfullscreen></iframe>` : ''}
+      `;
+  })
+  .catch(err => {
+      container.innerHTML = `<p class="text-red-500">Failed to load movie details.</p>`;
+      console.error("Error loading movie:", err);
+  });
+</script>
+<script>
+document.getElementById('favorite-btn').addEventListener('click', () => {
+  fetch(`/api/favorites/add/${movieId}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': '{{ csrf_token }}',
+    }
+  })
+  .then(res => {
+    if (res.ok) {
+      document.getElementById('fav-msg').classList.remove('hidden');
+    } else {
+      alert("Failed to add favorite. Are you logged in?");
+    }
+  })
+  .catch(err => console.error("Favorite error:", err));
+});
+</script>
+
+{% endblock %}

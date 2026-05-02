@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MovieHub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .poster-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            width: 100%;
+        }
+        .poster-grid img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+        }
+        #poster-bg > div:last-child {
+            background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.5));
+        }
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 10px #22d3ee, 0 0 20px #22d3ee; }
+            50% { text-shadow: 0 0 20px #3b82f6, 0 0 30px #3b82f6; }
+        }
+        .glow { animation: glow 3s infinite ease-in-out; }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 1s forwards; }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100">
+    <div id="poster-bg" class="absolute inset-0 overflow-hidden z-0">
+        <div class="poster-grid" id="poster-grid"></div>
+        <div class="absolute inset-0"></div>
+    </div>
+    <div class="relative z-10 h-screen flex flex-col items-center justify-center text-center px-4">
+       <h1 class="text-6xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent 
+           bg-gradient-to-r from-green-400 to-blue-500 glow animate-fade-in">
+            Welcome to MovieHub
+       </h1>
+        <p class="text-lg md:text-2xl text-gray-300 mb-8 animate-fade-in delay-200">
+            Discover. Favorite. Watch. All the best movies, all in one place.
+        </p>
+        <div class="flex flex-wrap gap-4 justify-center animate-fade-in delay-400">
+            <a href="{% url 'signup' %}" 
+               class="relative bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full 
+                      font-semibold shadow-lg transition-all transform hover:-translate-y-1 hover:scale-105">
+                <span class="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-blue-500 
+                             opacity-30 blur-md"></span>
+                <span class="relative">Get Started</span>
+            </a>
+            <a href="{% url 'home' %}" 
+               class="relative bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full 
+                      font-semibold shadow-lg transition-all transform hover:-translate-y-1 hover:scale-105">
+                <span class="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500 to-green-400 
+                             opacity-30 blur-md"></span>
+                <span class="relative">Browse Movies</span>
+            </a>
+        </div>
+    </div>
+
+<script>
+async function loadPosters() {
+    try {
+        const res = await fetch("/api/movies/tmdb/");
+        const data = await res.json();
+        const movies = data.results ? data.results : data;
+        const posterGrid = document.getElementById("poster-grid");
+
+        const blocked = [
+            "War of the Worlds",
+            "Mission: Impossible - The Final Reckoning",
+            "As Good as Dead",
+            "The Thing Behind The Door",
+            "Nobody 2",
+            "KPop Demon Hunters",
+            "The Conjuring: Last Rites",
+            "Humane",
+            "Superman",
+            "Detective Dee: The Four Heavenly Kings"
+        ];
+
+        let posters = [];
+
+        movies.forEach(movie => {
+            if (!blocked.includes(movie.title) && movie.poster_path) {
+                posters.push({
+                    title: movie.title,
+                    poster: "https://image.tmdb.org/t/p/w500" + movie.poster_path
+                });
+            }
+        });
+
+        const manualMovies = [
+            {id: 109445, name: "Frozen"},
+            {id: 27205, name: "Inception"},
+            {id: 10830, name: "Matilda"},
+            {id: 671, name: "Harry Potter"},
+            {id: 8204, name: "Fantastic Beasts"}
+        ];
+
+        for (let movie of manualMovies) {
+            const res = await fetch(`/api/movies/tmdb/${movie.id}/`);
+            const data = await res.json();
+            const poster = data.poster_path || data.movie?.poster_path;
+            const title = data.title || data.movie?.title || movie.name;
+            if (poster) {
+                posters.push({
+                    title: title,
+                    poster: "https://image.tmdb.org/t/p/w500" + poster
+                });
+            }
+        }
+
+        const reorder = [
+            {title: "Inception", index: 1},
+            {title: "Matilda", index: 2},
+            {title: "Frozen", index: 4},
+            {title: "Harry Potter", index: 5},
+            {title: "Fantastic Beasts", index: 6},
+            {title: "Detective Dee: The Four Heavenly Kings", index: 8}
+        ];
+
+        reorder.forEach(item => {
+            const idx = posters.findIndex(p => p.title.includes(item.title));
+            if (idx !== -1) {
+                const movie = posters.splice(idx, 1)[0];
+                posters.splice(item.index, 0, movie);
+            }
+        });
+
+        if (posters.length > 1) {
+            const firstMovie = posters.shift();
+            posters.push(firstMovie);
+        }
+
+        posters.forEach(p => {
+            const img = document.createElement("img");
+            img.src = p.poster;
+            img.alt = p.title;
+            posterGrid.appendChild(img);
+        });
+
+    } catch (err) {
+        console.error("Failed to load posters:", err);
+    }
+}
+
+loadPosters();
+</script>
+
+</body>
+</html>

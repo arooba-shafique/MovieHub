@@ -1,0 +1,120 @@
+{% extends 'movies/base.html' %}
+
+{% block content %}
+<h2 class="text-2xl mb-4">Popular Movies</h2>
+
+<div class="mb-4">
+    <input type="text" id="search" placeholder="Search movies..." class="border p-2 rounded w-full text-black">
+</div>
+
+<div id="loading" class="text-center my-4 hidden">
+    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-gray-900 mx-auto"></div>
+</div>
+
+<div id="movies" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+
+<script>
+const userAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+const favoriteIds = {{ favorite_ids|default:"[]"|safe }};
+const container = document.getElementById('movies');
+const loading = document.getElementById('loading');
+const searchInput = document.getElementById('search');
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+async function fetchMovies(query='') {
+    container.innerHTML = '';
+    loading.classList.remove('hidden');
+
+    let url = '/api/movies/tmdb/';
+    if (query) {
+        url = `/api/movies/tmdb/search/?q=${encodeURIComponent(query)}`;
+    }
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+        loading.classList.add('hidden');
+        const movies = data.results ? data.results : data;
+
+        if (!movies || movies.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-400">No movies found.</p>';
+            return;
+        }
+
+        movies.forEach(movie => {
+            const posterUrl = movie.poster_path 
+                ? 'https://image.tmdb.org/t/p/w500' + movie.poster_path 
+                : '/static/no-image.png';
+
+            const div = document.createElement('div');
+            div.className = 'bg-gray-700 p-2 rounded relative hover:bg-gray-600 transition';
+
+            div.innerHTML = `
+                <a href="/movies/tmdb/${movie.id}/">
+                    <img src="${posterUrl}" class="w-full rounded">
+                    <h3 class="text-lg mt-2 text-white font-semibold">${movie.title}</h3>
+                </a>
+            `;
+
+            if (userAuthenticated) {
+                const favBtn = document.createElement('button');
+                favBtn.className = 'favorite-btn absolute top-2 right-2 bg-white text-red-500 p-1 rounded-full text-sm';
+                favBtn.dataset.id = movie.id;
+                favBtn.dataset.title = movie.title;
+                favBtn.dataset.poster = posterUrl;
+
+                favBtn.textContent = favoriteIds.includes(movie.id) ? "❤️" : "🤍";
+                div.appendChild(favBtn);
+
+                favBtn.addEventListener('click', async (e) => {
+                    e.preventDefault();
+
+                    const tmdbId = favBtn.dataset.id;
+                    const response = await fetch(`/favorites/toggle/${tmdbId}/`, {
+                        method: 'POST',
+                        headers: { 
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: new URLSearchParams({
+                            title: favBtn.dataset.title,
+                            poster_url: favBtn.dataset.poster
+                        })
+                    });
+
+                    const data = await response.json();
+                    favBtn.textContent = data.status === "added" ? "❤️" : "🤍";
+                });
+            }
+
+            container.appendChild(div);
+        });
+    } catch (err) {
+        loading.classList.add('hidden');
+        container.innerHTML = '<p class="text-center text-red-500">Failed to load movies.</p>';
+        console.error("Error fetching movies:", err);
+    }
+}
+
+searchInput.addEventListener('input', (e) => {
+    const query = e.target.value.trim();
+    fetchMovies(query);
+});
+
+fetchMovies();
+</script>
+{% endblock %}
