@@ -46,7 +46,7 @@
     <div class="aspect-video rounded-xl overflow-hidden shadow-lg mb-4" id="trailer-container">
         <iframe 
             id="trailer-iframe"
-            src="https://www.youtube-nocookie.com/embed/{{ trailer }}"
+            src="https://www.youtube.com/embed/{{ trailer }}?rel=0"
             title="{{ movie.title }} trailer"
             class="w-full h-full"
             frameborder="0"
@@ -57,31 +57,11 @@
     <a href="https://www.youtube.com/watch?v={{ trailer }}" 
        target="_blank"
        id="trailer-fallback"
-       class="hidden bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-semibold inline-block mb-4">
-        ▶ Watch Trailer on YouTube
+       class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-semibold inline-block mb-4">
+        Watch Trailer on YouTube
     </a>
-
-    <script>
-        const iframe = document.getElementById('trailer-iframe');
-        const fallback = document.getElementById('trailer-fallback');
-        const container = document.getElementById('trailer-container');
-
-        // Show fallback button after 3 seconds if iframe hasn't loaded properly
-        setTimeout(() => {
-            try {
-                // If iframe content is blocked, show fallback
-                if (iframe.contentDocument === null) {
-                    container.classList.add('hidden');
-                    fallback.classList.remove('hidden');
-                }
-            } catch(e) {
-                container.classList.add('hidden');
-                fallback.classList.remove('hidden');
-            }
-        }, 3000);
-    </script>
 {% else %}
-    <p class="text-red-400 font-medium">🚫 Trailer not available</p>
+    <p class="text-gray-400 font-medium">Trailer not available</p>
 {% endif %}
       <a href="{{ full_movie_search_url }}" target="_blank" 
    class="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded font-semibold inline-block">
