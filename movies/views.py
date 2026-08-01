@@ -139,17 +139,22 @@ def tmdb_movie_detail_page(request, pk):
     videos_data = videos_response.json()
 
     trailer = None
+    full_movie_key = None
     for video in videos_data.get("results", []):
         if video["site"] == "YouTube" and video["type"] == "Trailer" and not trailer:
             trailer = video["key"]
+        if video["site"] == "YouTube" and video["type"] == "Full Movie" and not full_movie_key:
+            full_movie_key = video["key"]
 
     movie_title_for_search = movie.get("title", "").replace(" ", "+")
     full_movie_search_url = f"https://www.youtube.com/results?search_query={movie_title_for_search}+full+movie"
 
+    full_movie_url = f"https://www.youtube.com/watch?v={full_movie_key}" if full_movie_key else full_movie_search_url
+
     return render(request, "movies/tmdb_detail.html", {
         "movie": movie,
         "trailer": trailer,
-        "full_movie_search_url": full_movie_search_url
+        "full_movie_url": full_movie_url
     })
 
 
