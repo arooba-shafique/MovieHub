@@ -2,3 +2,5 @@ Django==5.2.5
 djangorestframework
 requests
 gunicorn
+dj-database-url
+psycopg2-binary
