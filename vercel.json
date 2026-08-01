@@ -2,7 +2,6 @@
   "buildCommand": "bash build.sh",
   "outputDirectory": ".",
   "framework": null,
-  "installCommand": "pip install --break-system-packages -r requirements.txt",
   "routes": [
     {
       "src": "/static/(.*)",
