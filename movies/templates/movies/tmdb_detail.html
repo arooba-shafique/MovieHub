@@ -43,20 +43,8 @@
 
        
        {% if trailer %}
-    <div class="aspect-video rounded-xl overflow-hidden shadow-lg mb-4" id="trailer-container">
-        <iframe 
-            id="trailer-iframe"
-            src="https://www.youtube.com/embed/{{ trailer }}?rel=0"
-            title="{{ movie.title }} trailer"
-            class="w-full h-full"
-            frameborder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen>
-        </iframe>
-    </div>
     <a href="https://www.youtube.com/watch?v={{ trailer }}" 
        target="_blank"
-       id="trailer-fallback"
        class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded font-semibold inline-block mb-4">
         Watch Trailer on YouTube
     </a>
