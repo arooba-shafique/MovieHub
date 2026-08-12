@@ -1,4 +1,4 @@
-Django==4.2.21
+Django==5.2.16
 djangorestframework
 requests
 gunicorn
